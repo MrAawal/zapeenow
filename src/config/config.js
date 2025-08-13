@@ -2,8 +2,10 @@ import "dotenv/config";
 import fastifySession from "@fastify/session";
 import ConnectMongoDBSession from "connect-mongodb-session";
 import { Admin } from "../models/index.js";
-export const PORT=process.env.PORT || 3000;
-export const COOKIE_PASSWORD=process.env.COOKIE_PASSWORD;
+
+
+export const PORT = process.env.PORT || 3000;
+export const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD;
 
 const MongoDBStore = ConnectMongoDBSession(fastifySession)
 
@@ -18,10 +20,10 @@ sessionStore.on('error',(error)=>{
 
 export const authenticate =async(email,password)=>{
 
-    //  UNCOMMENT THIS WHEN CREATING ADMIN  FIRST TIME
+     // UNCOMMENT THIS WHEN CREATING ADMIN  FIRST TIME
 
     // if(email && password){
-    //     if(email=='info@zapee.in' && password==="111111"){
+    //     if(email=='ritik@gmail.com' && password==="12345678"){
     //         return Promise.resolve({ email: email, password: password }); 
     //     }else{
     //         return null

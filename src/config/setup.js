@@ -37,7 +37,7 @@ export const admin = new AdminJS({
         { resource: Models.Counter },
     ],
     branding: {
-        companyName: "Zapee Grocery Delivery App",
+        companyName: "Grocery Delivery App",
         withMadeWithLove: false,
     },
     defaultTheme:dark.id,
