@@ -1,51 +1,55 @@
-import 'dotenv/config'
-import { connectDB } from "./src/config/connect.js";
+import 'dotenv/config';
+import { connectDB } from './src/config/connect.js';
 import fastify from 'fastify';
-import { PORT } from "./src/config/config.js";
 import fastifySocketIO from "fastify-socket.io";
 import { registerRoutes } from "./src/routes/index.js";
-import { admin, buildAdminRouter } from './src/config/setup.js';
+import { admin, buildAdminRouter } from './src/config/setup.js";
 
-const start = async()=>{
-    await connectDB(process.env.MONGO_URI);
-    const app = fastify()
+const PORT = process.env.PORT || 3000;
 
-    app.register(fastifySocketIO,{
-        cors:{
-            origin:"*"
-        },
-        pingInterval:10000,
-        pingTimeout:5000,
-        transports:['websocket']
-    })
+const start = async () => {
+    const app = fastify();
 
-    await registerRoutes(app)
+    try {
+        // Connect to MongoDB
+        await connectDB(process.env.MONGO_URI);
 
-    await buildAdminRouter(app);
+        // Register Socket.IO
+        app.register(fastifySocketIO, {
+            cors: {
+                origin: "*"
+            },
+            pingInterval: 10000,
+            pingTimeout: 5000,
+            transports: ['websocket']
+        });
 
-    app.listen({port:PORT,host:'0.0.0.0'},(err,addr)=>{
-        if(err){
-            console.log(err);
-        }else{
-            console.log(`Grocery App running on http://localhost:${PORT}${admin.options.rootPath}`)
-        }
-    })
+        // Register routes and admin panel
+        await registerRoutes(app);
+        await buildAdminRouter(app);
 
-    app.ready().then(()=>{
-        app.io.on('connection',(socket)=>{
-            console.log("A User Connected ✅")
+        // Start server
+        await app.listen({ port: PORT, host: '0.0.0.0' });
+        console.log(`✅ Zapee App running on http://localhost:${PORT}${admin.options.rootPath}`);
 
-            socket.on("joinRoom",(orderId)=>{
+        // Socket.IO events
+        app.io.on('connection', (socket) => {
+            console.log("A User Connected ✅");
+
+            socket.on("joinRoom", (orderId) => {
                 socket.join(orderId);
-                console.log(` 🔴 User Joined room ${orderId}`)
-            })
+                console.log(`🔴 User Joined room ${orderId}`);
+            });
 
-            socket.on('disconnect',()=>{
-                console.log("User Disconnected ❌")
-            })
-        })
-    })
+            socket.on('disconnect', () => {
+                console.log("User Disconnected ❌");
+            });
+        });
 
-}
+    } catch (err) {
+        console.error("❌ Failed to start server:", err);
+        process.exit(1);
+    }
+};
 
-start()
+start();
