@@ -3,7 +3,7 @@ import { connectDB } from './src/config/connect.js';
 import fastify from 'fastify';
 import fastifySocketIO from "fastify-socket.io";
 import { registerRoutes } from "./src/routes/index.js";
-import { admin, buildAdminRouter } from './src/config/setup.js";
+import { admin, buildAdminRouter } from './src/config/setup.js'; // ✅ Fixed quotes
 
 const PORT = process.env.PORT || 3000;
 
@@ -16,9 +16,7 @@ const start = async () => {
 
         // Register Socket.IO
         app.register(fastifySocketIO, {
-            cors: {
-                origin: "*"
-            },
+            cors: { origin: "*" },
             pingInterval: 10000,
             pingTimeout: 5000,
             transports: ['websocket']
