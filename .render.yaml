@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: zapee-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    nodeVersion: 22.16.0
+    autoDeploy: true
