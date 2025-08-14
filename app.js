@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import { connectDB } from './src/config/connect.js';
 import fastify from 'fastify';
-import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { registerRoutes } from './src/routes/index.js';
 import { admin, buildAdminRouter } from './src/config/setup.js';
@@ -10,13 +9,6 @@ const PORT = process.env.PORT || 3000;
 
 const start = async () => {
     const app = fastify();
-    const httpServer = createServer(app.server); // Native Node server
-    const io = new Server(httpServer, {
-        cors: { origin: "*" },
-        pingInterval: 10000,
-        pingTimeout: 5000,
-        transports: ['websocket']
-    });
 
     try {
         // Connect to MongoDB
@@ -26,18 +18,20 @@ const start = async () => {
         await registerRoutes(app);
         await buildAdminRouter(app);
 
-        // Start Fastify server
-        await app.listen({ port: PORT, host: '0.0.0.0' });
-        console.log(`✅ Zapee App running on http://localhost:${PORT}${admin.options.rootPath}`);
+        // Wait for Fastify to be ready before accessing app.server
+        await app.ready();
 
-        // Start Socket.IO server
-        httpServer.listen(PORT, () => {
-            console.log(`🟢 Socket.IO listening on port ${PORT}`);
+        // Attach Socket.IO to Fastify's internal server
+        const io = new Server(app.server, {
+            cors: { origin: "*" },
+            pingInterval: 10000,
+            pingTimeout: 5000,
+            transports: ['websocket']
         });
 
         // Socket.IO events
         io.on('connection', (socket) => {
-            console.log("A User Connected ✅");
+            console.log("✅ A User Connected");
 
             socket.on("joinRoom", (orderId) => {
                 socket.join(orderId);
@@ -45,9 +39,13 @@ const start = async () => {
             });
 
             socket.on('disconnect', () => {
-                console.log("User Disconnected ❌");
+                console.log("❌ User Disconnected");
             });
         });
+
+        // Start Fastify server
+        await app.listen({ port: PORT, host: '0.0.0.0' });
+        console.log(`✅ Zapee App running on http://localhost:${PORT}${admin.options.rootPath}`);
 
     } catch (err) {
         console.error("❌ Failed to start server:", err);
