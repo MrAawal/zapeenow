@@ -22,28 +22,28 @@ export const authenticate =async(email,password)=>{
 
      // UNCOMMENT THIS WHEN CREATING ADMIN  FIRST TIME
 
-    // if(email && password){
-    //     if(email=='ritik@gmail.com' && password==="12345678"){
-    //         return Promise.resolve({ email: email, password: password }); 
-    //     }else{
-    //         return null
-    //     }
-    // }
-
-
-    // UNCOMMENT THIS WHEN ALREADY CREATED ADMIN ON DATABASE
-
     if(email && password){
-        const user = await Admin.findOne({email});
-        if(!user){
-            return null
-        }
-        if(user.password===password){
+        if(email=='ritik@gmail.com' && password==="12345678"){
             return Promise.resolve({ email: email, password: password }); 
         }else{
             return null
         }
     }
+
+
+    // UNCOMMENT THIS WHEN ALREADY CREATED ADMIN ON DATABASE
+
+    // if(email && password){
+    //     const user = await Admin.findOne({email});
+    //     if(!user){
+    //         return null
+    //     }
+    //     if(user.password===password){
+    //         return Promise.resolve({ email: email, password: password }); 
+    //     }else{
+    //         return null
+    //     }
+    // }
     
 
     return null
