@@ -18,7 +18,7 @@ const start = async () => {
         await registerRoutes(app);
         await buildAdminRouter(app);
 
-        // Health check route (optional)
+        // Optional: Health check route for Render
         app.get('/health', async (req, reply) => {
             reply.send({ status: 'ok' });
         });
