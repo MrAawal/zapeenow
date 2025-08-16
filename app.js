@@ -14,9 +14,19 @@ const start = async () => {
         // Connect to MongoDB
         await connectDB(process.env.MONGO_URI);
 
-        // Register routes and admin panel
+        // Register core routes and admin panel
         await registerRoutes(app);
         await buildAdminRouter(app);
+
+        // ✅ Add root route to fix 404
+        app.get('/', async (req, reply) => {
+            reply.send({ message: '🚀 Zapee backend is alive!' });
+        });
+
+        // ✅ Optional health check route
+        app.get('/health', async (req, reply) => {
+            reply.send({ status: 'ok' });
+        });
 
         // Wait for Fastify to be ready before accessing app.server
         await app.ready();
