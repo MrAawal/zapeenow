@@ -19,14 +19,13 @@ sessionStore.on("error", (error) => {
 
 // Authenticate admin user
 export const authenticate = async (email, password) => {
-  if (email && password) {
-    const user = await Admin.findOne({ email });
-    if (!user) return null;
+  if (!email || !password) return null;
 
-    if (user.password === password) {
-      // ✅ Only return non-sensitive info
-      return { email: user.email, role: user.role };
-    }
-  }
-  return null;
+  const user = await Admin.findOne({ email });
+  if (!user) return null;
+
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) return null;
+
+  return { email: user.email, role: user.role };
 };
