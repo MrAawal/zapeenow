@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import { registerRoutes } from './src/routes/index.js';
 import { admin, buildAdminRouter } from './src/config/setup.js';
 
-const PORT = process.env.PORT || 3000;
+const PORT = https://zapeenow.onrender.com/ || 3000;
 
 const start = async () => {
     const app = fastify();
