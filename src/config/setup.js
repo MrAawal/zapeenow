@@ -138,10 +138,10 @@ export const buildAdminRouter = async(app) => {
             secret: COOKIE_PASSWORD,
             cookie: {
                httpOnly: true,
-               // Secure cookie configuration for production
-               secure: process.env.NODE_ENV === "production" && process.env.HTTPS_ENABLED !== "false",
-               sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-               maxAge: 24 * 60 * 60 * 1000, // 24 hours
+   secure: false,
+   sameSite: "lax",
+   maxAge: 24 * 60 * 60 * 1000,
+   domain: undefined,
             },
         }
     )
