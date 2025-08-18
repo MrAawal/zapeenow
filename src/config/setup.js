@@ -9,7 +9,7 @@ import ConnectMongoDBSession from "connect-mongodb-session";
 import AdminJS from "adminjs";
 import AdminJSFastify from "@adminjs/fastify";
 import * as AdminJSMongoose from "@adminjs/mongoose";
-import * as Models from "./models/index.js"; // Adjust path according to your project
+import * as Models from "../models/index.js"; // Adjust path according to your project
 
 AdminJS.registerAdapter(AdminJSMongoose);
 
