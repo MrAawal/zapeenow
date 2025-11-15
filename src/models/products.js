@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const productScehma = new mongoose.Schema({
+const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   image: { type: String, required: true },
   price: { type: Number, required: true },
@@ -11,8 +11,18 @@ const productScehma = new mongoose.Schema({
     ref: "Category",
     required: true,
   },
+  subCategory: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    // no ref since subCategory is nested inside category schema
+  },
+  childCategory: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: false,
+    // no ref since childCategory is nested inside subCategory schema
+  },
 });
 
-const Product = mongoose.model("Product", productScehma);
+const Product = mongoose.model("Product", productSchema);
 
 export default Product;

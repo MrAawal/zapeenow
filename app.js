@@ -21,6 +21,11 @@ const start = async()=>{
 
     await registerRoutes(app)
 
+    // Bundle AdminJS components BEFORE building the router
+    console.log('📦 Bundling AdminJS components...');
+    await admin.watch();
+    console.log('✅ Components bundled successfully!');
+
     await buildAdminRouter(app);
 
     app.listen({port:PORT,host:'0.0.0.0'},(err,addr)=>{

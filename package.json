@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "node node_modules/@adminjs/bundler/bin/cli.js bundle"
   },
   "keywords": [],
   "author": "",
@@ -34,5 +35,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
     "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "@adminjs/bundler": "^3.0.0"
   }
 }

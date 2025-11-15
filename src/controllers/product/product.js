@@ -1,11 +1,16 @@
+//Product Controller
+
 import Product from "../../models/products.js";
 
-export const getProductsByCategoryId = async (req, reply) => {
-  const { categoryId } = req.params;
-
+export const getProductsByCategorySubcategory = async (req, reply) => {
+  const { categoryId, subCategoryId, childCategoryId } = req.params;
   try {
-    const products = await Product.find({ category: categoryId })
-      .select("-category")
+    let query = { category: categoryId };
+    if (subCategoryId) query.subCategory = subCategoryId;
+    if (childCategoryId) query.childCategory = childCategoryId;
+
+    const products = await Product.find(query)
+      .select("-category -subCategory -childCategory")
       .exec();
 
     return reply.send(products);

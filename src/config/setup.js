@@ -4,64 +4,117 @@ import * as AdminJSMongoose from "@adminjs/mongoose";
 import * as Models from "../models/index.js";
 import { authenticate, COOKIE_PASSWORD, sessionStore } from "./config.js";
 import { dark, light, noSidebar } from "@adminjs/themes";
+import { ComponentLoader } from "adminjs";
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-AdminJS.registerAdapter(AdminJSMongoose)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+AdminJS.registerAdapter(AdminJSMongoose);
+
+const componentLoader = new ComponentLoader();
+
+// Components are in src/config/components
+const SubCategoryDropdown = componentLoader.add(
+  'SubCategoryDropdown',
+  join(__dirname, 'components', 'SubCategoryDropdown')
+);
+
+const ChildCategoryDropdown = componentLoader.add(
+  'ChildCategoryDropdown',
+  join(__dirname, 'components', 'ChildCategoryDropdown')
+);
 
 export const admin = new AdminJS({
-    resources:[
-        {
-            resource: Models.Customer,
-            options: {
-              listProperties: ["phone", "role", "isActivated"],
-              filterProperties: ["phone", "role"],
-            },
-          },
-          {
-            resource: Models.DeliveryPartner,
-            options: {
-              listProperties: ["email", "role", "isActivated"],
-              filterProperties: ["email", "role"],
-            },
-          },
-          {
-            resource: Models.Admin,
-            options: {
-              listProperties: ["email", "role", "isActivated"],
-              filterProperties: ["email", "role"],
-            },
-          },
-        { resource: Models.Branch },
-        { resource: Models.Product },
-        { resource: Models.Category },
-        { resource: Models.Order },
-        { resource: Models.Counter },
-    ],
-    branding: {
-        companyName: "Grocery Delivery App",
-        withMadeWithLove: false,
+  componentLoader,
+  rootPath: '/admin',
+  branding: {
+    companyName: "Grocery Delivery App",
+    withMadeWithLove: false,
+  },
+  defaultTheme: light.id,
+  availableThemes: [dark, light, noSidebar],
+  resources: [
+    {
+      resource: Models.Customer,
+      options: {
+        listProperties: ["phone", "role", "isActivated"],
+        filterProperties: ["phone", "role"],
+      },
     },
-    defaultTheme:dark.id,
-    availableThemes: [dark,light,noSidebar],
-    rootPath:'/admin'
-})
-
-export const buildAdminRouter = async(app)=>{
-    await AdminJSFastify.buildAuthenticatedRouter(
-        admin,
-        {
-            authenticate,
-            cookiePassword:COOKIE_PASSWORD,
-            cookieName:'adminjs'
-        },
-        app,
-        {
-            store:sessionStore,
-            saveUnintialized: true,
-            secret: COOKIE_PASSWORD,
-            cookie: {
-              httpOnly: process.env.NODE_ENV === "production",
-              secure: process.env.NODE_ENV === "production",
+    {
+      resource: Models.DeliveryPartner,
+      options: {
+        listProperties: ["email", "role", "isActivated"],
+        filterProperties: ["email", "role"],
+      },
+    },
+    {
+      resource: Models.Admin,
+      options: {
+        listProperties: ["email", "role", "isActivated"],
+        filterProperties: ["email", "role"],
+      },
+    },
+    { resource: Models.Branch },
+    { resource: Models.Product,
+      options: {
+        properties: {
+          category: {
+            reference: 'Category',
+            type: 'reference',
+          },
+          subCategory: {
+            type: 'string',
+            isVisible: {
+              list: true, show: true, filter: true, edit: true
             },
-        }
-    )
+            components: {
+              edit: SubCategoryDropdown,
+              show: SubCategoryDropdown,
+            }
+          },
+          childCategory: {
+            type: 'string',
+            isVisible: {
+              list: true, show: true, filter: true, edit: true
+            },
+            components: {
+              edit: ChildCategoryDropdown,
+              show: ChildCategoryDropdown,
+            }
+          }
+        },
+        listProperties: ['name', 'image', 'price', 'category', 'subCategory', 'childCategory'],
+      }
+    },
+    { resource: Models.Category },
+    { resource: Models.Order },
+    { resource: Models.Counter },
+  ],
+});
+
+export const buildAdminRouter = async (app) => {
+  await AdminJSFastify.buildAuthenticatedRouter(
+    admin,
+    {
+      authenticate,
+      cookiePassword: COOKIE_PASSWORD,
+      cookieName: 'adminjs'
+    },
+    app,
+    {
+  store: sessionStore,
+  saveUninitialized: true,  // FIXED SPELLING
+  secret: COOKIE_PASSWORD,
+  resave: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",           // IMPORTANT ON RENDER
+  },
+}
+
+  )
 }
