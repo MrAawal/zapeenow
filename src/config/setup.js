@@ -2,11 +2,12 @@ import AdminJS from "adminjs";
 import AdminJSFastify from "@adminjs/fastify";
 import * as AdminJSMongoose from "@adminjs/mongoose";
 import * as Models from "../models/index.js";
-import { authenticate, COOKIE_PASSWORD, sessionStore } from "./config.js";
+import { authenticate, COOKIE_PASSWORD } from "./config.js";
 import { dark, light, noSidebar } from "@adminjs/themes";
 import { ComponentLoader } from "adminjs";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -101,22 +102,8 @@ export const buildAdminRouter = async (app) => {
     {
       authenticate,
       cookiePassword: COOKIE_PASSWORD,
-      cookieName: 'adminjs'
+      cookieName: 'adminjs',
     },
-    app,
-    {
-      store: sessionStore,
-      saveUninitialized: true,
-      secret: COOKIE_PASSWORD,
-      cookie: {
-        httpOnly: process.env.NODE_ENV === "production",
-        secure: process.env.NODE_ENV === "production",
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
-      },
-      // Add these session options
-      rolling: true, // Reset cookie expiration on every response
-      resave: false // Don't save session if unmodified
-    }
-  )
-}
+    app
+  );
+};

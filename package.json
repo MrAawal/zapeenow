@@ -28,6 +28,7 @@
     "@fastify/cookie": "8.3.0",
     "@fastify/session": "10.9.0",
     "adminjs": "^7.8.13",
+    "connect-mongo": "^5.1.0",
     "connect-mongodb-session": "^5.0.0",
     "dotenv": "^16.4.5",
     "fastify": "^4.29.1",
