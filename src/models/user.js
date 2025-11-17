@@ -15,19 +15,39 @@ const userSchema = new mongoose.Schema({
 // Customer Schema
 
 const customerSchema = new mongoose.Schema({
-    ...userSchema.obj,
-    phone : { type: Number, required: true, unique: true },
-    role: { type: String, enum: ["Customer"], default: "Customer" },
-    liveLocation: {
-      latitude: { type: Number },
-      longitude: { type: Number },
-    },
-    address: { type: String },
-     branch: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Branch",
-    },
-})
+  ...userSchema.obj,
+
+  phone: { type: Number, required: true, unique: true },
+
+  role: { type: String, enum: ["Customer"], default: "Customer" },
+
+  liveLocation: {
+    latitude: { type: Number },
+    longitude: { type: Number },
+  },
+
+  address: { type: String },
+
+  // ⭐ Nearest Assigned Branch
+  branch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Branch",
+    default: null,
+  },
+
+  // ⭐ Distance from branch (in KM)
+  branchDistance: {
+    type: Number,
+    default: null,
+  },
+
+  // ⭐ Whether customer is inside delivery radius
+  withinDeliveryRadius: {
+    type: Boolean,
+    default: true,
+  },
+});
+
 
 // Delivery Partner Schema
 const deliveryPartnerSchema = new mongoose.Schema({
