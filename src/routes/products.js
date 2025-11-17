@@ -9,6 +9,7 @@ export const categoryRoutes = async (fastify, options) => {
 };
 
 export const productRoutes = async (fastify, options) => {
+  fastify.get("/products", getProductsByCategorySubcategory);
   // Get products by category
   fastify.get("/products/:categoryId", getProductsByCategorySubcategory);
 

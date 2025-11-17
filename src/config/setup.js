@@ -105,16 +105,13 @@ export const buildAdminRouter = async (app) => {
     },
     app,
     {
-  store: sessionStore,
-  saveUninitialized: true,  // FIXED SPELLING
-  secret: COOKIE_PASSWORD,
-  resave: false,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none",           // IMPORTANT ON RENDER
-  },
-}
-
+      store: sessionStore,
+      saveUnintialized: true,
+      secret: COOKIE_PASSWORD,
+      cookie: {
+        httpOnly: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "production",
+      },
+    }
   )
 }
