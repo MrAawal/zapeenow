@@ -15,7 +15,6 @@ AdminJS.registerAdapter(AdminJSMongoose);
 
 const componentLoader = new ComponentLoader();
 
-// Components are in src/config/components
 const SubCategoryDropdown = componentLoader.add(
   'SubCategoryDropdown',
   join(__dirname, 'components', 'SubCategoryDropdown')
@@ -58,7 +57,8 @@ export const admin = new AdminJS({
       },
     },
     { resource: Models.Branch },
-    { resource: Models.Product,
+    { 
+      resource: Models.Product,
       options: {
         properties: {
           category: {
@@ -106,12 +106,17 @@ export const buildAdminRouter = async (app) => {
     app,
     {
       store: sessionStore,
-      saveUnintialized: true,
+      saveUninitialized: true,
       secret: COOKIE_PASSWORD,
       cookie: {
         httpOnly: process.env.NODE_ENV === "production",
         secure: process.env.NODE_ENV === "production",
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
       },
+      // Add these session options
+      rolling: true, // Reset cookie expiration on every response
+      resave: false // Don't save session if unmodified
     }
   )
 }

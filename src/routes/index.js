@@ -13,4 +13,11 @@ export const registerRoutes = async (fastify) => {
   fastify.register(branchRoutes, { prefix: prefix });
   
   console.log('✅ All routes registered successfully');
+  console.log('✅ All routes registered');
+  
+  // Add this to see all routes after registration
+  fastify.after(() => {
+    console.log('📍 Available routes:');
+    console.log(fastify.printRoutes());
+  });
 };

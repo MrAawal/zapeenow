@@ -3,48 +3,59 @@ import fastifySession from "@fastify/session";
 import ConnectMongoDBSession from "connect-mongodb-session";
 import { Admin } from "../models/index.js";
 
-
 export const PORT = process.env.PORT || 3000;
 export const COOKIE_PASSWORD = process.env.COOKIE_PASSWORD;
 
 const MongoDBStore = ConnectMongoDBSession(fastifySession)
 
 export const sessionStore = new MongoDBStore({
-    uri:process.env.MONGO_URI,
-    collection:"sessions"
-})
-
-sessionStore.on('error',(error)=>{
-    console.log("Session store error",error)
-})
-
-export const authenticate =async(email,password)=>{
-
-     // UNCOMMENT THIS WHEN CREATING ADMIN  FIRST TIME
-
-    // if(email && password){
-    //     if(email=='ritik@gmail.com' && password==="12345678"){
-    //         return Promise.resolve({ email: email, password: password }); 
-    //     }else{
-    //         return null
-    //     }
-    // }
-
-
-    // UNCOMMENT THIS WHEN ALREADY CREATED ADMIN ON DATABASE
-
-    if(email && password){
-        const user = await Admin.findOne({email});
-        if(!user){
-            return null
-        }
-        if(user.password===password){
-            return Promise.resolve({ email: email, password: password }); 
-        }else{
-            return null
-        }
+    uri: process.env.MONGO_URI,
+    collection: "sessions",
+    connectionOptions: {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
     }
-    
+})
 
-    return null
+sessionStore.on('error', (error) => {
+    console.log("❌ Session store error:", error)
+})
+
+sessionStore.on('connected', () => {
+    console.log('✅ Session store connected to MongoDB');
+});
+
+export const authenticate = async (email, password) => {
+    console.log('🔐 Authentication attempt:', { email, hasPassword: !!password });
+    
+    try {
+        if (email && password) {
+            const user = await Admin.findOne({ email });
+            console.log('👤 User found:', !!user);
+            
+            if (!user) {
+                console.log('❌ No user found for email:', email);
+                return null;
+            }
+            
+            if (user.password === password) {
+                console.log('✅ Password match successful for:', email);
+                return Promise.resolve({ 
+                    email: user.email, 
+                    password: user.password,
+                    _id: user._id,
+                    role: user.role 
+                });
+            } else {
+                console.log('❌ Password mismatch');
+                return null;
+            }
+        }
+        
+        console.log('❌ Missing email or password');
+        return null;
+    } catch (error) {
+        console.error('🚨 Authentication error:', error);
+        return null;
+    }
 }

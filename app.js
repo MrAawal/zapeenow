@@ -8,8 +8,12 @@ import { admin, buildAdminRouter } from './src/config/setup.js';
 
 const start = async()=>{
     await connectDB(process.env.MONGO_URI);
-    const app = fastify()
+    
+    const app = fastify({
+        logger: true // Enable logging to see what's happening
+    })
 
+    // Register Socket.IO
     app.register(fastifySocketIO,{
         cors:{
             origin:"*"
@@ -19,6 +23,7 @@ const start = async()=>{
         transports:['websocket']
     })
 
+    // Register your API routes
     await registerRoutes(app)
 
     // Bundle AdminJS components BEFORE building the router
@@ -26,13 +31,15 @@ const start = async()=>{
     await admin.watch();
     console.log('✅ Components bundled successfully!');
 
+    // Build AdminJS router
+    // NOTE: AdminJS registers @fastify/cookie internally, so we don't need to register it separately
     await buildAdminRouter(app);
 
     app.listen({port:PORT,host:'0.0.0.0'},(err,addr)=>{
         if(err){
             console.log(err);
         }else{
-            console.log(`Grocery App running on http://localhost:${PORT}${admin.options.rootPath}`)
+            console.log(`✅ Grocery App running on http://localhost:${PORT}${admin.options.rootPath}`)
         }
     })
 
@@ -42,7 +49,7 @@ const start = async()=>{
 
             socket.on("joinRoom",(orderId)=>{
                 socket.join(orderId);
-                console.log(` 🔴 User Joined room ${orderId}`)
+                console.log(`🔴 User Joined room ${orderId}`)
             })
 
             socket.on('disconnect',()=>{

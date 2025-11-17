@@ -22,7 +22,7 @@ function toRad(value) {
 
 export const branchRoutes = async (fastify, options) => {
   // Find nearest branch
-  fastify.post('/nearest', async (request, reply) => {
+  fastify.post('/branch/nearest', async (request, reply) => {
     try {
       const { latitude, longitude } = request.body;
 
@@ -90,7 +90,7 @@ export const branchRoutes = async (fastify, options) => {
   });
 
   // Get all branches with distances
-  fastify.post('/all-with-distance', async (request, reply) => {
+  fastify.post('/branch/all-with-distance', async (request, reply) => {
     try {
       const { latitude, longitude } = request.body;
 
@@ -136,7 +136,7 @@ export const branchRoutes = async (fastify, options) => {
   });
 
   // Get single branch by ID
-  fastify.get('/:branchId', async (request, reply) => {
+  fastify.get('/branch/:branchId', async (request, reply) => {
     try {
       const { branchId } = request.params;
 
@@ -165,7 +165,7 @@ export const branchRoutes = async (fastify, options) => {
   });
 
   // Toggle branch online/offline status (Admin only)
-  fastify.patch('/:branchId/toggle-status', async (request, reply) => {
+  fastify.patch('/branch/:branchId/toggle-status', async (request, reply) => {
     try {
       const { branchId } = request.params;
       const { isOnline } = request.body;
@@ -199,7 +199,7 @@ export const branchRoutes = async (fastify, options) => {
   });
 
   // Get all branches (Admin)
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/branch', async (request, reply) => {
     try {
       const branches = await Branch.find()
         .populate('deliveryPartners')

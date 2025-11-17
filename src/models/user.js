@@ -36,16 +36,16 @@ const customerSchema = new mongoose.Schema({
   },
 
   // ⭐ Distance from branch (in KM)
-  branchDistance: {
-    type: Number,
-    default: null,
-  },
+  // branchDistance: {
+  //   type: Number,
+  //   default: null,
+  // },
 
-  // ⭐ Whether customer is inside delivery radius
-  withinDeliveryRadius: {
-    type: Boolean,
-    default: true,
-  },
+  // // ⭐ Whether customer is inside delivery radius
+  // withinDeliveryRadius: {
+  //   type: Boolean,
+  //   default: true,
+  // },
 });
 
 
