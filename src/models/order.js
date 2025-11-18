@@ -56,6 +56,9 @@ const orderSchema= new mongoose.Schema({
         default: "available",
       },
       totalPrice: { type: Number, required: true },
+      deliveryCharge: { type: Number, required: true },
+      handlingCharge: { type: Number, required: true },
+      surgeCharge: { type: Number, required: true },
       createdAt: { type: Date, default: Date.now },
       updatedAt: { type: Date, default: Date.now },
 });
