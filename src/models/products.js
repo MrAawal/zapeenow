@@ -6,6 +6,14 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   discountPrice: { type: Number },
   quantity: { type: String, required: true },
+  stock: { type: String, required: true },
+  isStock:{type:Boolean,required:true},
+  
+  branch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Branch",
+    required: true,
+  },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",

@@ -33,7 +33,7 @@ export const admin = new AdminJS({
     companyName: "Grocery Delivery App",
     withMadeWithLove: false,
   },
-  defaultTheme: light.id,
+  defaultTheme: dark.id,
   availableThemes: [dark, light, noSidebar],
   resources: [
     {
@@ -62,6 +62,10 @@ export const admin = new AdminJS({
       resource: Models.Product,
       options: {
         properties: {
+           branch: {
+            reference: 'Branch',
+            type: 'reference',
+          },
           category: {
             reference: 'Category',
             type: 'reference',
