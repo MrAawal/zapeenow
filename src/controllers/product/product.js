@@ -58,22 +58,32 @@ export const searchProducts = async (req, reply) => {
     }
 
     if (!q) {
-      return reply.send([]); // empty result
+      return reply.send([]);
     }
 
-    // Case-insensitive search
-    const queryRegex = new RegExp(q, "i");
+    const regex = new RegExp(q, "i"); // case-insensitive
 
-    const products = await Product.find({
-      branch: branchId,
-      name: queryRegex
-    }).select("-category -subCategory -childCategory -branch");
+    // Fetch with category/subcategory populated
+    const products = await Product.find({ branch: branchId })
+      .populate({ path: "category", select: "name" })
+      .populate({ path: "subCategory", select: "name" })
+      .populate({ path: "childCategory", select: "name" });
 
-    return reply.send(products);
+    // Filter based on name/category/subCategory/childCategory
+    const filtered = products.filter((p) => {
+      return (
+        regex.test(p.name) ||
+        regex.test(p.category?.name || "") ||
+        regex.test(p.subCategory?.name || "") ||
+        regex.test(p.childCategory?.name || "")
+      );
+    });
 
+    return reply.send(filtered);
   } catch (error) {
     console.log("Search Error:", error);
     return reply.status(500).send({ message: "Failed to search products", error });
   }
 };
+
 
