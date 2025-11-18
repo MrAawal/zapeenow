@@ -52,6 +52,21 @@ const branchSchema = new mongoose.Schema(
       type: Number,
       default: 10, // 10km default delivery radius
     },
+    deliveryChargePerKm: {
+      type: Number,
+      default: 5, // 10km default delivery radius
+    },
+
+    handlingCharge: {
+      type: Number,
+      default: 5, // 10km default delivery radius
+    },
+
+     surgeCharge: {
+      type: Number,
+      default: 5, // 10km default delivery radius
+    },
+
   },
   {
     timestamps: true,
