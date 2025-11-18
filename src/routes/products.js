@@ -1,13 +1,13 @@
 // Product Routes
-import { 
-  getAllCategories, 
-  getSubcategoriesByCategoryId, 
-  getChildrenBySubcategory 
+import {
+  getAllCategories,
+  getSubcategoriesByCategoryId,
+  getChildrenBySubcategory
 } from "../controllers/product/category.js";
 
-import { 
-  getProductsByCategorySubcategory, 
-  getProductsByBranch 
+import {
+  getProductsByCategorySubcategory,
+  getProductsByBranch
 } from "../controllers/product/product.js";
 
 export const categoryRoutes = async (fastify, options) => {
@@ -54,4 +54,7 @@ export const productRoutes = async (fastify, options) => {
     "/products/:categoryId/:subCategoryId/:childCategoryId/:branch",
     getProductsByCategorySubcategory
   );
+
+  fastify.get("/products/search", searchProducts);
+
 };

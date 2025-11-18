@@ -48,3 +48,32 @@ export const getProductsByBranch = async (req, reply) => {
     return reply.status(500).send({ message: "Failed to fetch branch products", error });
   }
 };
+
+export const searchProducts = async (req, reply) => {
+  try {
+    const { branchId, q } = req.query;
+
+    if (!branchId) {
+      return reply.status(400).send({ message: "Branch ID is required" });
+    }
+
+    if (!q) {
+      return reply.send([]); // empty result
+    }
+
+    // Case-insensitive search
+    const queryRegex = new RegExp(q, "i");
+
+    const products = await Product.find({
+      branch: branchId,
+      name: queryRegex
+    }).select("-category -subCategory -childCategory -branch");
+
+    return reply.send(products);
+
+  } catch (error) {
+    console.log("Search Error:", error);
+    return reply.status(500).send({ message: "Failed to search products", error });
+  }
+};
+
