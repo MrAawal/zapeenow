@@ -7,7 +7,8 @@ import {
 
 import {
   getProductsByCategorySubcategory,
-  getProductsByBranch
+  getProductsByBranch,
+  searchProducts  
 } from "../controllers/product/product.js";
 
 export const categoryRoutes = async (fastify, options) => {
