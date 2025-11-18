@@ -2,7 +2,6 @@ import Order from "../../models/order.js";
 import Branch from "../../models/branch.js";
 import { Customer, DeliveryPartner } from "../../models/user.js";
 
-
 export const createOrder = async (req, reply) => {
   try {
     const { userId } = req.user;
