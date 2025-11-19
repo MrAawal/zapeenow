@@ -91,24 +91,28 @@ export const searchProducts = async (req, reply) => {
 export const getSponsoredProduct = async (req, reply) => {
   try {
     const { branch } = req.params;
+    const { type } = req.query; // "true" or "false"
 
     if (!branch) {
       return reply.status(400).send({ message: "Branch ID is required" });
     }
 
-    // Find products that are sponsored and belong to the branch
-    const products = await Product.find({ 
+    const isSponsoredValue = type === "false" ? false : true;
+
+    const products = await Product.find({
       branch,
-      isSponsored: true 
+      isSponsored: isSponsoredValue
     })
       .select("-category -subCategory -childCategory -branch")
-      .sort({ createdAt: -1 }); // Optional: sort by newest first
+      .sort({ createdAt: -1 });
 
     return reply.send(products);
 
   } catch (error) {
     console.log(error);
-    return reply.status(500).send({ message: "Failed to fetch sponsored products", error });
+    return reply
+      .status(500)
+      .send({ message: "Failed to fetch sponsored products", error });
   }
 };
 

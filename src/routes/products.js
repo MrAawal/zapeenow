@@ -37,7 +37,8 @@ export const categoryRoutes = async (fastify, options) => {
 };
 
 export const productRoutes = async (fastify, options) => {
-
+  
+  fastify.get("/products/branch/:branch/sponsored", getSponsoredProduct);
   //
   // 1. All products of a branch
   //
@@ -66,8 +67,7 @@ export const productRoutes = async (fastify, options) => {
     "/products/:categoryId/:subCategoryId/:childCategoryId/:branch",
     getProductsByCategorySubcategory
   );
-  
-  fastify.get("/products/branch/:branch/sponsored", getSponsoredProduct);
+
   
   fastify.get("/products/search", searchProducts);
 
