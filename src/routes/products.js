@@ -2,13 +2,16 @@
 import {
   getAllCategories,
   getSubcategoriesByCategoryId,
-  getChildrenBySubcategory
+  getChildrenBySubcategory,
+  getFeaturedCategories,
+  getSortedCategories,
 } from "../controllers/product/category.js";
 
 import {
   getProductsByCategorySubcategory,
   getProductsByBranch,
-  searchProducts  
+  searchProducts,
+  getSponsoredProduct,
 } from "../controllers/product/product.js";
 
 export const categoryRoutes = async (fastify, options) => {
@@ -23,6 +26,14 @@ export const categoryRoutes = async (fastify, options) => {
     "/categories/:categoryId/subcategories/:subCategoryId/children",
     getChildrenBySubcategory
   );
+
+  // Get only featured categories
+  fastify.get('/categories/featured', getFeaturedCategories);
+
+  // Get sorted categories
+  fastify.get('/categories/sorted', getSortedCategories);
+  // Query params: ?order=asc|desc
+
 };
 
 export const productRoutes = async (fastify, options) => {
@@ -55,7 +66,9 @@ export const productRoutes = async (fastify, options) => {
     "/products/:categoryId/:subCategoryId/:childCategoryId/:branch",
     getProductsByCategorySubcategory
   );
-
+  
+  fastify.get("/products/branch/:branch/sponsored", getSponsoredProduct);
+  
   fastify.get("/products/search", searchProducts);
 
 };

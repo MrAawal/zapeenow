@@ -7,6 +7,7 @@ const productSchema = new mongoose.Schema({
   discountPrice: { type: Number },
   quantity: { type: String, required: true },
   stock: { type: String, required: true },
+  isSponsored:{type:Boolean,required:true},
   isStock:{type:Boolean,required:true},
   
   branch: {

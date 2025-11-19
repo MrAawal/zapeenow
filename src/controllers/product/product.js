@@ -29,6 +29,8 @@ export const getProductsByCategorySubcategory = async (req, reply) => {
 };
 
 
+
+
 // 2. FETCH ALL PRODUCTS FOR A BRANCH DIRECTLY
 export const getProductsByBranch = async (req, reply) => {
   try {
@@ -85,5 +87,30 @@ export const searchProducts = async (req, reply) => {
     return reply.status(500).send({ message: "Failed to search products", error });
   }
 };
+
+export const getSponsoredProduct = async (req, reply) => {
+  try {
+    const { branch } = req.params;
+
+    if (!branch) {
+      return reply.status(400).send({ message: "Branch ID is required" });
+    }
+
+    // Find products that are sponsored and belong to the branch
+    const products = await Product.find({ 
+      branch,
+      isSponsored: true 
+    })
+      .select("-category -subCategory -childCategory -branch")
+      .sort({ createdAt: -1 }); // Optional: sort by newest first
+
+    return reply.send(products);
+
+  } catch (error) {
+    console.log(error);
+    return reply.status(500).send({ message: "Failed to fetch sponsored products", error });
+  }
+};
+
 
 

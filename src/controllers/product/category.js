@@ -43,3 +43,27 @@ export const getChildrenBySubcategory = async (req, reply) => {
   }
 };
 
+
+// Get only featured categories
+export const getFeaturedCategories = async (req, reply) => {
+  try {
+    const categories = await Category.find({ isFeatured: true }).sort({ sort: 1 });
+    return reply.send(categories);
+  } catch (error) {
+    return reply.status(500).send({ message: "An error occurred", error });
+  }
+};
+
+// Get categories sorted by sort field
+export const getSortedCategories = async (req, reply) => {
+  try {
+    const { order } = req.query; // 'asc' or 'desc'
+    const sortOrder = order === 'desc' ? -1 : 1;
+    
+    const categories = await Category.find().sort({ sort: sortOrder });
+    return reply.send(categories);
+  } catch (error) {
+    return reply.status(500).send({ message: "An error occurred", error });
+  }
+};
+

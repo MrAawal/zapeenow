@@ -3,23 +3,23 @@ import mongoose from "mongoose";
 
 const branchSchema = new mongoose.Schema(
   {
-    name: { 
-      type: String, 
-      required: true 
+    name: {
+      type: String,
+      required: true
     },
     location: {
-      latitude: { 
+      latitude: {
         type: Number,
-        required: true 
+        required: true
       },
-      longitude: { 
+      longitude: {
         type: Number,
-        required: true 
+        required: true
       },
     },
-    address: { 
+    address: {
       type: String,
-      required: true 
+      required: true
     },
     deliveryPartners: [
       {
@@ -62,7 +62,7 @@ const branchSchema = new mongoose.Schema(
       default: 5, // 10km default delivery radius
     },
 
-     surgeCharge: {
+    surgeCharge: {
       type: Number,
       default: 5, // 10km default delivery radius
     },

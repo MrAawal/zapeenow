@@ -14,6 +14,8 @@ const subCategorySchema = new mongoose.Schema({
 const categorySchema = new mongoose.Schema({
   name: { type: String, required: true },
   image: { type: String, required: true },
+  sort:{type:Number,required:true},
+  isFeatured:{type:Boolean},  
   subCategories: [subCategorySchema]
 });
 
