@@ -1,44 +1,44 @@
-//Product Controller
+// Product Controller
 import Product from "../../models/products.js";
+import { Customer } from "../../models/user.js";
 
-// 1. FETCH PRODUCTS BY CATEGORY / SUBCATEGORY / CHILD CATEGORY + BRANCH
+/* ----------------------------------------------------
+   1. FETCH PRODUCTS BY CATEGORY / SUBCATEGORY / CHILD
+----------------------------------------------------- */
 export const getProductsByCategorySubcategory = async (req, reply) => {
-  const { categoryId, subCategoryId, childCategoryId, branch } = req.params;
-
   try {
-    if (!branch) {
-      return reply.status(400).send({ message: "Branch ID is required" });
-    }
+    const { categoryId, subCategoryId, childCategoryId } = req.params;
 
-    let query = { category: categoryId };
+    // Get branch from logged-in customer
+    const { userId } = req.user;
+    const customer = await Customer.findById(userId);
+    const branch = customer.branch;
+
+    // Build query
+    let query = { category: categoryId, branch };
 
     if (subCategoryId) query.subCategory = subCategoryId;
     if (childCategoryId) query.childCategory = childCategoryId;
 
-    // Mandatory branch
-    query.branch = branch;
-
     const products = await Product.find(query)
-      .select("-category -subCategory -childCategory -branch")
-      .exec();
+      .select("-category -subCategory -childCategory -branch");
 
     return reply.send(products);
+
   } catch (error) {
-    return reply.status(500).send({ message: "An error occurred", error });
+    return reply.status(500).send({ message: "Product Fetch Failed", error });
   }
 };
 
 
-
-
-// 2. FETCH ALL PRODUCTS FOR A BRANCH DIRECTLY
+/* ----------------------------------------------------
+   2. FETCH ALL PRODUCTS FOR USER'S BRANCH
+----------------------------------------------------- */
 export const getProductsByBranch = async (req, reply) => {
   try {
-    const { branch } = req.params;
-
-    if (!branch) {
-      return reply.status(400).send({ message: "Branch ID is required" });
-    }
+    const { userId } = req.user;
+    const customer = await Customer.findById(userId);
+    const branch = customer.branch;
 
     const products = await Product.find({ branch })
       .select("-category -subCategory -childCategory -branch");
@@ -46,56 +46,56 @@ export const getProductsByBranch = async (req, reply) => {
     return reply.send(products);
 
   } catch (error) {
-    console.log(error);
     return reply.status(500).send({ message: "Failed to fetch branch products", error });
   }
 };
 
+
+/* ----------------------------------------------------
+   3. SEARCH PRODUCTS (name + category + sub + child)
+----------------------------------------------------- */
 export const searchProducts = async (req, reply) => {
   try {
-    const { branchId, q } = req.query;
+    const { q } = req.query;
 
-    if (!branchId) {
-      return reply.status(400).send({ message: "Branch ID is required" });
-    }
+    const { userId } = req.user;
+    const customer = await Customer.findById(userId);
+    const branch = customer.branch;
 
-    if (!q) {
-      return reply.send([]);
-    }
+    if (!q) return reply.send([]);
 
-    const regex = new RegExp(q, "i"); // case-insensitive
+    const regex = new RegExp(q, "i");
 
-    // Fetch with category/subcategory populated
-    const products = await Product.find({ branch: branchId })
+    const products = await Product.find({ branch })
       .populate({ path: "category", select: "name" })
       .populate({ path: "subCategory", select: "name" })
       .populate({ path: "childCategory", select: "name" });
 
-    // Filter based on name/category/subCategory/childCategory
-    const filtered = products.filter((p) => {
-      return (
-        regex.test(p.name) ||
-        regex.test(p.category?.name || "") ||
-        regex.test(p.subCategory?.name || "") ||
-        regex.test(p.childCategory?.name || "")
-      );
-    });
+    const filtered = products.filter((p) =>
+      regex.test(p.name) ||
+      regex.test(p.category?.name || "") ||
+      regex.test(p.subCategory?.name || "") ||
+      regex.test(p.childCategory?.name || "")
+    );
 
     return reply.send(filtered);
+
   } catch (error) {
-    console.log("Search Error:", error);
-    return reply.status(500).send({ message: "Failed to search products", error });
+    return reply.status(500).send({ message: "Search failed", error });
   }
 };
 
+
+/* ----------------------------------------------------
+   4. SPONSORED PRODUCTS
+----------------------------------------------------- */
 export const getSponsoredProduct = async (req, reply) => {
   try {
-    const { branch } = req.params;
-    const { type } = req.query; // "true" or "false"
+    const { type } = req.query;
 
-    if (!branch) {
-      return reply.status(400).send({ message: "Branch ID is required" });
-    }
+    const { userId } = req.user;
+    const customer = await Customer.findById(userId);
+    const branch = customer.branch;
 
     const isSponsoredValue = type === "false" ? false : true;
 
@@ -109,12 +109,6 @@ export const getSponsoredProduct = async (req, reply) => {
     return reply.send(products);
 
   } catch (error) {
-    console.log(error);
-    return reply
-      .status(500)
-      .send({ message: "Failed to fetch sponsored products", error });
+    return reply.status(500).send({ message: "Failed to fetch sponsored products", error });
   }
 };
-
-
-

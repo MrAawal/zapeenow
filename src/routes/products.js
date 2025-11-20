@@ -13,62 +13,65 @@ import {
   searchProducts,
   getSponsoredProduct,
 } from "../controllers/product/product.js";
+import { verifyToken } from "../middleware/auth.js";
+
+
+
 
 export const categoryRoutes = async (fastify, options) => {
+
+  fastify.addHook("preHandler", async (request, reply) => {
+      const isAuthenticated = await verifyToken(request, reply);
+      if (!isAuthenticated) {
+        return reply.code(401).send({ message: "Unauthorized" });
+      }
+    });
+
   fastify.get("/categories", getAllCategories);
 
-  fastify.get(
-    "/categories/:categoryId/subcategories",
-    getSubcategoriesByCategoryId
-  );
+  fastify.get("/categories/featured", getFeaturedCategories);
 
-  fastify.get(
-    "/categories/:categoryId/subcategories/:subCategoryId/children",
-    getChildrenBySubcategory
-  );
-
-  // Get only featured categories
-  fastify.get('/categories/featured', getFeaturedCategories);
-
-  // Get sorted categories
-  fastify.get('/categories/sorted', getSortedCategories);
-  // Query params: ?order=asc|desc
-
+  fastify.get("/categories/sorted", getSortedCategories);
 };
+export const categoryRoutes2 = async (fastify, options) => {
+
+  fastify.get("/categories/:categoryId/subcategories", getSubcategoriesByCategoryId);
+
+  fastify.get("/categories/:categoryId/subcategories/:subCategoryId/children", getChildrenBySubcategory);
+};
+
+
 
 export const productRoutes = async (fastify, options) => {
-  
-  fastify.get("/products/branch/:branch/sponsored", getSponsoredProduct);
-  //
-  // 1. All products of a branch
-  //
-  fastify.get("/products/branch/:branch", getProductsByBranch);
+    fastify.addHook("preHandler", async (request, reply) => {
+      const isAuthenticated = await verifyToken(request, reply);
+      if (!isAuthenticated) {
+        return reply.code(401).send({ message: "Unauthorized" });
+      }
+    });
 
-  //
-  // 2. Products by Category (branch mandatory)
-  //
+  // CATEGORY ONLY
   fastify.get(
-    "/products/:categoryId/:branch",
+    "/products/category/:categoryId",
     getProductsByCategorySubcategory
   );
 
-  //
-  // 3. Products by Category + SubCategory (branch mandatory)
-  //
+  // CATEGORY → SUBCATEGORY
   fastify.get(
-    "/products/:categoryId/:subCategoryId/:branch",
+    "/products/category/:categoryId/subcategory/:subCategoryId",
     getProductsByCategorySubcategory
   );
 
-  //
-  // 4. Products by Category + SubCategory + ChildCategory (branch mandatory)
-  //
+  // CATEGORY → SUBCATEGORY → CHILD
   fastify.get(
-    "/products/:categoryId/:subCategoryId/:childCategoryId/:branch",
+    "/products/category/:categoryId/subcategory/:subCategoryId/child/:childCategoryId",
     getProductsByCategorySubcategory
   );
 
-  
+  fastify.get("/products/sponsored", getSponsoredProduct);
+
   fastify.get("/products/search", searchProducts);
 
+  fastify.get("/products/branch", getProductsByBranch);
 };
+
