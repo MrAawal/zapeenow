@@ -12,6 +12,7 @@ import {
   getProductsByBranch,
   searchProducts,
   getSponsoredProduct,
+  getProductsByCategoryWithSponsored,
 } from "../controllers/product/product.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -69,7 +70,7 @@ export const productRoutes = async (fastify, options) => {
   );
 
   fastify.get("/products/sponsored", getSponsoredProduct);
-
+  fastify.get("/products/category/:categoryId/filter", getProductsByCategoryWithSponsored);
   fastify.get("/products/search", searchProducts);
 
   fastify.get("/products/branch", getProductsByBranch);

@@ -30,6 +30,46 @@ export const getProductsByCategorySubcategory = async (req, reply) => {
   }
 };
 
+export const getProductsByCategoryWithSponsored = async (req, reply) => {
+  try {
+    const { categoryId } = req.params;
+    const { subCategoryId, childCategoryId } = req.query;
+    const { type } = req.query;   // true / false / all
+
+    // Get branch from logged-in user
+    const { userId } = req.user;
+    const customer = await Customer.findById(userId);
+    const branch = customer.branch;
+
+    // Base query
+    let query = { 
+      category: categoryId,
+      branch
+    };
+
+    if (subCategoryId) query.subCategory = subCategoryId;
+    if (childCategoryId) query.childCategory = childCategoryId;
+
+    // Sponsored filter
+    if (type === "true") query.isSponsored = true;
+    if (type === "false") query.isSponsored = false;
+    // if type = "all" → do nothing
+
+    const products = await Product.find(query)
+      .select("-category -subCategory -childCategory -branch")
+      .sort({ isSponsored: -1, createdAt: -1 }); // sponsored first
+
+    return reply.send(products);
+
+  } catch (error) {
+    return reply.status(500).send({ 
+      message: "Failed to fetch products", 
+      error 
+    });
+  }
+};
+
+
 
 /* ----------------------------------------------------
    2. FETCH ALL PRODUCTS FOR USER'S BRANCH
